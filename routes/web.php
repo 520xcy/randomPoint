@@ -12,8 +12,15 @@
 */
 
 Route::get('/', function () {
-    $sessionid = Session::getId();
-    $user = \App\Models\User::firstOrCreate(['sessionid' => $sessionid]);
+    if(Auth::guard('random')->guest()){
+        $sessionid = Session::getId();
+        $user = \App\Models\User::firstOrCreate(['sessionid' => $sessionid]);
+        $user_id = $user->uuid;
+        Auth::guard('random')->login($user, true);
+    }
+    $user_id = Auth::guard('random')->id();
 
-    return view('index', ['user_id' => $user->uuid]);
+    
+
+    return view('index', ['user_id' => $user_id]);
 });

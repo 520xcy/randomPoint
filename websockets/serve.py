@@ -19,7 +19,7 @@ HEARTTIME = 60000
 def state_event():
     STATE = {}
     for user in DATADB.values():
-        if check_heart(user['time']):
+        if check_heart(user['time']) and user['name']:
             STATE[user['name']] = user['history']
     return json.dumps({"type": "state", "data": STATE})
 
@@ -64,7 +64,6 @@ def set_heartuuid():
     return json.dumps({'type': 'checkid', 'name': HEARTID})
 
 def check_heart(user_time):
-    print(int(round(time.time() * 1000)),user_time)
     return int(round(time.time() * 1000)) - user_time < HEARTTIME
 
 def set_heart(user_id,time):
