@@ -131,7 +131,7 @@
                             res[i].reverse();
                             res_new.push(res[i].length);
                         }
-                        let max = res_new.sort((a, b) => a < b)[0];
+                        let max = res_new.sort((a, b) => b - a)[0];
                         let key = Object.keys(res);
                         let thead = '<tr><th>次数</th>';
                         for (k in key) {
@@ -157,7 +157,7 @@
                         break;
                     case 'users':
                         $('#user_count').html(data.count.toString())
-                        $('#user_namelist').html(data.name.join(';'));
+                        $('#user_namelist').html(data.name.join('; '));
 
                         break;
                     case 'reg':
