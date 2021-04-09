@@ -104,6 +104,10 @@
                 });
             })
 
+            setInterval(function(){
+                websocket.send(JSON.stringify({ action: 'set_heart', user_uuid:user_uuid,time: new Date().getTime() }));
+            },20000);
+
             websocket.onopen = function() {
                 websocket.send(JSON.stringify({ action: 'join_room', user_uuid : user_uuid }));
                 layer.msg('成功加入大家庭');
@@ -133,7 +137,7 @@
                         }
                         let max = res_new.sort((a, b) => b - a)[0];
                         let key = Object.keys(res);
-                        let thead = '<tr><th>次数</th>';
+                        let thead = '<tr>';
                         for (k in key) {
                             thead += '<th>' + key[k].toString() + '</th>';
                         }
@@ -141,9 +145,8 @@
 
                         $('#res_thead').html(thead);
                         let tbody = '';
-                        let count = max;
                         for (row = 0; row < max; row++) {
-                            let tr = '<tr><td>' + count.toString() + '</td>';
+                            let tr = '<tr>';
 
                             for (k in res) {
                                 let td = res[k][row] ? res[k][row] : '';
@@ -151,7 +154,6 @@
                             }
                             tr += '</td>';
                             tbody += tr;
-                            count--;
                         }
                         $('#res_tbody').html(tbody);
                         break;
