@@ -34,10 +34,10 @@
                 <h2 class="layui-colla-title">设置</h2>
                 <div class="layui-colla-content layui-show">
                     <form class="layui-form">
-                        <div class="layui-inline" style="width: 80%;">
+                        <div class="layui-inline" style="width: 78%;">
                             <input type="text" id="name" name="name" required lay-verify="required" placeholder="请输入昵称" autocomplete="off" class="layui-input" lay-verType="tips" lay-reqText="你想让大家称呼阿猫阿狗？">
                         </div>
-                        <div class="layui-inline" style="width: 15%;">
+                        <div class="layui-inline" style="width: 20%;">
                             <button id="setname" type="button" class="layui-btn layui-btn layui-btn-primary layui-border-blue layui-btn-fluid" lay-submit lay-filter="setname">确认</button>
                         </div>
                     </form>
@@ -111,7 +111,7 @@
 
             websocket.onerror = function(e) {
                 //如果出现连接、处理、接收、发送数据失败的时候触发onerror事件
-                layer.msg(error);
+                layer.msg(e);
             }
 
             websocket.onclose = function(e){
