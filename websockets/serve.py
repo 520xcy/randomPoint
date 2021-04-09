@@ -43,9 +43,8 @@ def set_msg(msg):
 def new_point(point):
     return json.dumps({'type': 'newpoint', 'point': point})
 
-
-def reg_user(user_uuid, name):
-    return json.dumps({'type': 'reg', 'uuid': str(user_uuid), 'name': str(name)})
+def reg_user(name):
+    return json.dumps({'type': 'reg', 'name': str(name)})
 
 def send_message(websocket, message):
     return asyncio.wait([asyncio.create_task(websocket.send(message))])
@@ -61,21 +60,25 @@ async def rst_all():
         [await send_message(user,message) for user in USERS]
         await notify_state()
 
-async def set_name(websocket, name):
+async def set_name(websocket, name, user_uuid):
     message = ''
     for user in DATADB.values():
         if name == user['name'] or not name:
             message = set_msg('昵称已存在')
     if not message:
-        user_uuid = uuid.uuid1().hex[16:]
         if user_uuid in DATADB:
             DATADB[user_uuid]['name'] = name
         else:
             DATADB[user_uuid] = {'name': name, 'history': []}
-            await notify_users()
-        message = reg_user(user_uuid, name)
+        await notify_users()
+        message = reg_user(name)
     await send_message(websocket, message)
 
+async def join_room(websocket,user_uuid):
+    if user_uuid in DATADB:
+        name = DATADB[user_uuid]['name']
+        message = reg_user(name)
+        await send_message(websocket, message)
 
 async def need_random(websocket, user_uuid):
     if user_uuid and user_uuid in DATADB.keys() and DATADB[user_uuid]['name']:
@@ -125,12 +128,14 @@ async def counter(websocket, path):
             data = json.loads(data)
             log.critical(data)
             if data['action'] == 'setname':
-                await set_name(websocket, data['value'])
+                await set_name(websocket, data['value'], data['user_uuid'])
             elif data['action'] == 'random':
                 await need_random(websocket, data['user_uuid'])
             elif data['action'] == 'clear_history':
                 if data['pwd'] == 'xiang':
                     await rst_all()
+            elif data['action'] == 'join_room':
+                await join_room(websocket, data['user_uuid'])
             else:
                 log.error("unsupported event: %s", data)
     finally:
