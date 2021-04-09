@@ -138,7 +138,7 @@ async def counter(websocket, path):
 
 if __name__ == '__main__':
     log = get_logger(__name__, 'ERROR')
-    start_server = websockets.serve(counter, "localhost", 6789)
+    start_server = websockets.serve(counter, "0.0.0.0", 6789)
 
     asyncio.get_event_loop().run_until_complete(start_server)
     log.critical('服务端启动成功')
