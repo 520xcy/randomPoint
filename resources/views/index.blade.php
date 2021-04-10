@@ -109,39 +109,39 @@
                 <div class="layui-panel">
                     <div class="layui-row">
                         <div class="layui-col-xs4 touzi" data-number="1d2">
-                            <img src="/images/1d2-cyan~iphone.png" alt="" srcset="">
+                            <img src="/images/1d2-black~iphone.png" alt="" srcset="">
                             <span></span>
                         </div>
                         <div class="layui-col-xs4 touzi" data-number="1d3">
-                            <img src="/images/1d3-cyan~iphone.png" alt="" srcset="">
+                            <img src="/images/1d3-black~iphone.png" alt="" srcset="">
                             <span></span>
                         </div>
                         <div class="layui-col-xs4 touzi" data-number="1d4">
-                            <img src="/images/1d4-cyan~iphone.png" alt="" srcset="">
+                            <img src="/images/1d4-black~iphone.png" alt="" srcset="">
                             <span></span>
                         </div>
                         <div class="layui-col-xs4 touzi" data-number="1d6">
-                            <img src="/images/1d6-cyan~iphone.png" alt="" srcset="">
+                            <img src="/images/1d6-black~iphone.png" alt="" srcset="">
                             <span></span>
                         </div>
                         <div class="layui-col-xs4 touzi" data-number="1d8">
-                            <img src="/images/1d8-cyan~iphone.png" alt="" srcset="">
+                            <img src="/images/1d8-black~iphone.png" alt="" srcset="">
                             <span></span>
                         </div>
                         <div class="layui-col-xs4 touzi" data-number="1d10">
-                            <img src="/images/1d10-cyan~iphone.png" alt="" srcset="">
+                            <img src="/images/1d10-black~iphone.png" alt="" srcset="">
                             <span></span>
                         </div>
                         <div class="layui-col-xs4 touzi" data-number="1d12">
-                            <img src="/images/1d12-cyan~iphone.png" alt="" srcset="">
+                            <img src="/images/1d12-black~iphone.png" alt="" srcset="">
                             <span></span>
                         </div>
                         <div class="layui-col-xs4 touzi" data-number="1d20">
-                            <img src="/images/1d20-cyan~iphone.png" alt="" srcset="">
+                            <img src="/images/1d20-black~iphone.png" alt="" srcset="">
                             <span></span>
                         </div>
                         <div class="layui-col-xs4 touzi" data-number="1d100">
-                            <img src="/images/1d100-cyan~iphone.png" alt="" srcset="">
+                            <img src="/images/1d100-black~iphone.png" alt="" srcset="">
                             <span></span>
                         </div>
                     </div>
@@ -176,8 +176,7 @@
 
             var user_count, user_name = '',
                 user_uuid = "{{ $user_id ?? '' }}";
-            var d_number = [2, 3, 4, 6, 8, 10, 12, 20, 100],
-                d_color = ['black', 'blue', 'cyan', 'green', 'orange', 'pink', 'purple', 'red', 'white', 'yellow'];
+            var d_color = ['black', 'blue', 'cyan', 'green', 'orange', 'pink', 'purple', 'red', 'white', 'yellow'];
             var d_random = {};
             var d_type = false;
 
@@ -186,7 +185,6 @@
             }
             form.render('select', 'setting');
             form.on('select(d_color)', function(data) {
-                console.log(data.value); //得到被选中的值
 
                 $('.touzi').each(function() {
                     let imgsrc = '/images/' + $(this).data('number') + '-' + data.value + '~iphone.png';
