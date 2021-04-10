@@ -16,6 +16,7 @@ DATADB = {}
 
 HEARTTIME = 60000
 
+
 def state_event():
     STATE = {}
     for user in DATADB.values():
@@ -34,8 +35,16 @@ def users_event():
     return json.dumps({"type": "users", "count": count, "name": name})
 
 
-def getRandom():
-    return random.randrange(1, 99)
+def getRandom(dford):
+    count = 0
+    try:
+        for d in dford:
+            rolltype = int(d[d.index('d')+1:])
+            for i in range(0, int(dford[d])):
+                count += random.randrange(1, rolltype + 1)
+    finally:
+        return count
+
 
 def set_msg(msg):
     return json.dumps({'type': 'msg', 'message': str(msg)})
@@ -44,8 +53,10 @@ def set_msg(msg):
 def new_point(point):
     return json.dumps({'type': 'newpoint', 'point': point})
 
+
 def reg_user(name):
     return json.dumps({'type': 'reg', 'name': str(name)})
+
 
 def send_message(user, message):
     if check_heart(user['time']):
@@ -53,28 +64,32 @@ def send_message(user, message):
     else:
         return asyncio.sleep(0)
 
+
 def reset_all():
     for user in DATADB:
         DATADB[user]['history'] = []
-
 
 
 def set_heartuuid():
     HEARTID = str(uuid.uuid4())
     return json.dumps({'type': 'checkid', 'name': HEARTID})
 
+
 def check_heart(user_time):
     return int(round(time.time() * 1000)) - user_time < HEARTTIME
 
-def set_heart(user_id,time):
+
+def set_heart(user_id, time):
     if user_id in DATADB:
         DATADB[user_id]['time'] = int(time)
+
 
 async def rst_all():
     if DATADB:  # asyncio.wait doesn't accept an empty list
         message = set_msg('已清除历史数据')
         reset_all()
-        [await send_message(DATADB[user],message) for user in DATADB]
+        [await send_message(DATADB[user], message) for user in DATADB]
+
 
 async def set_name(name, user_uuid):
     message = ''
@@ -88,7 +103,8 @@ async def set_name(name, user_uuid):
         message = reg_user(name)
     await send_message(DATADB[user_uuid], message)
 
-async def join_room(websocket,user_uuid):
+
+async def join_room(websocket, user_uuid):
     if user_uuid in DATADB:
         name = DATADB[user_uuid]['name']
         DATADB[user_uuid]['ws'] = websocket
@@ -96,21 +112,25 @@ async def join_room(websocket,user_uuid):
         message = reg_user(name)
         await send_message(DATADB[user_uuid], message)
     else:
-        DATADB[user_uuid] = {'ws': websocket,'name':'','history': [], 'time':int(round(time.time() * 1000))}
+        DATADB[user_uuid] = {'ws': websocket, 'name': '',
+                             'history': [], 'time': int(round(time.time() * 1000))}
 
-async def need_random(user_uuid):
+
+async def need_random(user_uuid, dford, dtype):
     if user_uuid and user_uuid in DATADB.keys() and DATADB[user_uuid]['name']:
-        num = getRandom()
-        DATADB[user_uuid]['history'].append(num)
-
+        num = getRandom(dford)
         await send_message(DATADB[user_uuid], new_point(num))
-        name = DATADB[user_uuid]['name']
-        message = set_msg(f'{name}<br>投掷了<br><span class="point">{num}</span>')
-        for user in DATADB:
-            if user == user_uuid:
-                continue
-            else:
-                await send_message(DATADB[user], message)
+        print(dtype)
+        if not dtype:
+            DATADB[user_uuid]['history'].append(num)
+            name = DATADB[user_uuid]['name']
+            message = set_msg(
+                f'{name}<br>投掷了<br><span class="point">{num}</span>')
+            for user in DATADB:
+                if user == user_uuid:
+                    continue
+                else:
+                    await send_message(DATADB[user], message)
     else:
         await send_message(DATADB[user_uuid], set_msg('请先设置昵称'))
 
@@ -118,14 +138,14 @@ async def need_random(user_uuid):
 async def notify_state():
     if DATADB:  # asyncio.wait doesn't accept an empty list
         message = state_event()
-        [await send_message(DATADB[user],message) for user in DATADB]
+        [await send_message(DATADB[user], message) for user in DATADB]
 
 
 async def notify_users():
     if DATADB:  # asyncio.wait doesn't accept an empty list
         message = users_event()
-        [await send_message(DATADB[user],message) for user in DATADB]
- 
+        [await send_message(DATADB[user], message) for user in DATADB]
+
 # async def unregister(websocket):
 #     DATADB.remove(websocket)
 #     await notify_users()
@@ -134,6 +154,7 @@ async def notify_users():
 async def counter(websocket, path):
     # register(websocket) sends user_event() to websocket
     # await register(websocket)
+
     await websocket.send(state_event())
     async for data in websocket:
         data = json.loads(data)
@@ -141,7 +162,7 @@ async def counter(websocket, path):
         if data['action'] == 'setname':
             await set_name(data['value'], data['user_uuid'])
         elif data['action'] == 'random':
-            await need_random(data['user_uuid'])
+            await need_random(data['user_uuid'], data['data'], data['dark'])
         elif data['action'] == 'clear_history':
             if data['pwd'] == 'xiang':
                 await rst_all()
@@ -151,9 +172,10 @@ async def counter(websocket, path):
             set_heart(data['user_uuid'], data['time'])
         else:
             log.error("unsupported event: %s", data)
-        
+
         await notify_users()
         await notify_state()
+
 
 if __name__ == '__main__':
     log = get_logger(__name__, 'ERROR')
