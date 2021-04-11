@@ -307,8 +307,14 @@
 
             websocket.onclose = function(e) {
                 //当客户端收到服务端发送的关闭连接请求时，触发onclose事件
-                layer.msg('与大家庭链接断开了，要不刷新下页面试试？');
+                // layer.msg('与大家庭链接断开了，要不刷新下页面试试？');
+                layer.open({
+                    title: false
+                    ,content: '与大家庭链接断开了，要不刷新下页面试试？'
+                    ,btn:[]
+                });   
             }
+
 
             websocket.onmessage = function(event) {
                 data = JSON.parse(event.data);
