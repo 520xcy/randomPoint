@@ -34,13 +34,16 @@
             right: 1%;
             z-index: 1000;
         }
+
         .setting .layui-form-select dl dd.layui-this {
             background-color: #1E9FFF;
             color: #fff;
         }
+
         .layui-timeline-axis {
-            color:#1E9FFF !important;
+            color: #1E9FFF !important;
         }
+
         .random .layui-form-checked span,
         .layui-form-checked:hover span {
             background-color: #393D49;
@@ -111,29 +114,7 @@
                                     <tbody id="res_tbody"></tbody>
                                 </table> --}}
                                 <ul class="layui-timeline" id="res_history">
-                                    <li class="layui-timeline-item">
-                                        <i class="layui-icon layui-timeline-axis">&#xe63f;</i>
-                                        <div class="layui-timeline-content layui-text">
-                                            <h3 class="layui-timeline-title">某某某</h3>
-                                            <table class="layui-table" lay-size="sm">
-                                                <thead>
-                                                    <tr>
-                                                        <th>骰子</th>
-                                                        <th>次数</th>
-                                                        <th>结果</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody>
-                                                    <tr>
-                                                        <td>q</td>
-                                                        <td>2</td>
-                                                        <td>3</td>
-                                                    </tr>
-                                                </tbody>
 
-                                            </table>
-                                        </div>
-                                    </li>
                                 </ul>
                             </div>
                         </div>
@@ -217,12 +198,12 @@
             var d_type = false;
 
             /*
-            ** 时间戳转换成指定格式日期
-            ** eg. 
-            ** dateFormat(11111111111111, 'Y年m月d日 H时i分')
-            ** → "2322年02月06日 03时45分"
-            */
-            var dateFormat = function (timestamp, formats) {
+             ** 时间戳转换成指定格式日期
+             ** eg. 
+             ** dateFormat(11111111111111, 'Y年m月d日 H时i分')
+             ** → "2322年02月06日 03时45分"
+             */
+            var dateFormat = function(timestamp, formats) {
                 // formats格式包括
                 // 1. Y-m-d
                 // 2. Y-m-d H:i:s
@@ -230,14 +211,14 @@
                 // 4. Y年m月d日 H时i分
                 formats = formats || 'Y-m-d';
 
-                var zero = function (value) {
+                var zero = function(value) {
                     if (value < 10) {
                         return '0' + value;
                     }
                     return value;
                 };
 
-                var myDate = timestamp? new Date(timestamp): new Date();
+                var myDate = timestamp ? new Date(timestamp) : new Date();
 
                 var year = myDate.getFullYear();
                 var month = zero(myDate.getMonth() + 1);
@@ -247,7 +228,7 @@
                 var minite = zero(myDate.getMinutes());
                 var second = zero(myDate.getSeconds());
 
-                return formats.replace(/Y|m|d|H|i|s/ig, function (matches) {
+                return formats.replace(/Y|m|d|H|i|s/ig, function(matches) {
                     return ({
                         Y: year,
                         m: month,
@@ -279,9 +260,13 @@
                 d_type = data.elem.checked;
             });
             $('#random').click(function() {
+                if (!$.isEmptyObject(d_random)) {
+                    websocket.send(JSON.stringify({ action: 'random', user_uuid: user_uuid, data: d_random, dark: d_type }));
+                    $("#clear").trigger("click");
+                }else{
+                    layer.msg('您还没选骰子');
+                }
 
-                websocket.send(JSON.stringify({ action: 'random', user_uuid: user_uuid, data: d_random, dark: d_type }));
-                $("#clear").trigger("click");
             });
 
             $('#clear').click(function() {
@@ -331,16 +316,16 @@
                     case 'state':
                         let res_html = '';
                         let res = data.data;
-                        for(key in res){
+                        for (key in res) {
                             let res_name = res[key][1];
-                            let res_time = dateFormat(res[key][0],'Y-m-d H:i:s');
+                            let res_time = dateFormat(res[key][0], 'Y-m-d H:i:s');
                             let res_history = '';
                             let res_sum = 0;
-                                res_sum += res[key][2][0];
-                                for( res_type in res[key][2][1]){
-                                    res_history += '<tr><td>'+res_type+'</td><td>'+res[key][2][1][res_type]+'</td></tr>';
-                                }
-                            res_html += '<li class="layui-timeline-item"><i class="layui-icon layui-timeline-axis">&#xe63f;</i><div class="layui-timeline-content layui-text"><h3 class="layui-timeline-title">'+name+'</h3><p>'+res_time+'</p><table class="layui-table" lay-size="sm"><thead><tr><th>骰子</th><th>结果</th></tr></thead><tbody><tr><td>合计</td><td>'+res_sum+'</td></tr>'+res_history+'</tbody></table></div></li>';
+                            res_sum += res[key][2][0];
+                            for (res_type in res[key][2][1]) {
+                                res_history += '<tr><td>' + res_type + '</td><td>' + res[key][2][1][res_type] + '</td></tr>';
+                            }
+                            res_html += '<li class="layui-timeline-item"><i class="layui-icon layui-timeline-axis">&#xe63f;</i><div class="layui-timeline-content layui-text"><h3 class="layui-timeline-title">' + name + '</h3><p>' + res_time + '</p><table class="layui-table" lay-size="sm"><thead><tr><th>骰子</th><th>结果</th></tr></thead><tbody><tr><td>合计</td><td>' + res_sum + '</td></tr>' + res_history + '</tbody></table></div></li>';
 
                         }
                         $('#res_history').html(res_html);
