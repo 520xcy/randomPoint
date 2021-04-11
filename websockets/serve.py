@@ -67,7 +67,7 @@ def new_point(point):
 
 
 def other_point(name, point):
-    return json.dumps({'type': 'newpoint', 'point': point, 'name': name})
+    return json.dumps({'type': 'otherpoint', 'point': point, 'name': name})
 
 
 def reg_user(name):
