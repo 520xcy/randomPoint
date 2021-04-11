@@ -40,17 +40,20 @@ def users_event():
 
 def getRandom(dford):
     count = 0
-    detail = {}
+    detail = []
     # try:
     for d in dford:
         d_type = dford[d]
         rolltype = int(d[d.index('d')+1:])
-        t_point = 0
         for i in range(0, int(d_type)):
-            point = random.randrange(1, rolltype + 1)
-            t_point += point
+            if d == '1d10':
+                point = random.randrange(0, 10)
+            elif d == '1d100':
+                point = random.randrange(0, 100, 10)
+            else:
+                point = random.randrange(1, rolltype + 1)
             count += point
-        detail[f'{str(d_type)}d{str(rolltype)}'] = t_point
+            detail.append([str(d),point])
     return (count, detail)
 
     # finally:
