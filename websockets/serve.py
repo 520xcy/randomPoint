@@ -18,10 +18,13 @@ HEARTTIME = 60000
 
 
 def state_event():
-    STATE = {}
+    STATE = []
     for user in DATADB.values():
         if check_heart(user['time']) and user['name']:
-            STATE[user['name']] = user['history']
+            for time in user['history']:
+
+                STATE.append([time,user['name'], user['history'][time]])
+    STATE = sorted(STATE, key=lambda k: k[0],reverse=True)
     return json.dumps({"type": "state", "data": STATE})
 
 
@@ -37,13 +40,22 @@ def users_event():
 
 def getRandom(dford):
     count = 0
-    try:
-        for d in dford:
-            rolltype = int(d[d.index('d')+1:])
-            for i in range(0, int(dford[d])):
-                count += random.randrange(1, rolltype + 1)
-    finally:
-        return count
+    detail = {}
+    # try:
+    for d in dford:
+        d_type = dford[d]
+        rolltype = int(d[d.index('d')+1:])
+        t_point = 0
+        for i in range(0, int(d_type)):
+            point = random.randrange(1, rolltype + 1)
+            t_point += point
+            count += point
+        detail[f'{str(d_type)}d{str(rolltype)}'] = t_point
+    return (count, detail)
+
+    # finally:
+    #     print(detail)
+    #     return count
 
 
 def set_msg(msg):
@@ -52,6 +64,10 @@ def set_msg(msg):
 
 def new_point(point):
     return json.dumps({'type': 'newpoint', 'point': point})
+
+
+def other_point(name, point):
+    return json.dumps({'type': 'newpoint', 'point': point, 'name': name})
 
 
 def reg_user(name):
@@ -67,7 +83,7 @@ def send_message(user, message):
 
 def reset_all():
     for user in DATADB:
-        DATADB[user]['history'] = []
+        DATADB[user]['history'] = {}
 
 
 def set_heartuuid():
@@ -113,19 +129,19 @@ async def join_room(websocket, user_uuid):
         await send_message(DATADB[user_uuid], message)
     else:
         DATADB[user_uuid] = {'ws': websocket, 'name': '',
-                             'history': [], 'time': int(round(time.time() * 1000))}
+                             'history': {}, 'time': int(round(time.time() * 1000))}
 
 
 async def need_random(user_uuid, dford, dtype):
     if user_uuid and user_uuid in DATADB.keys() and DATADB[user_uuid]['name']:
-        num = getRandom(dford)
+        num, detail = getRandom(dford)
         await send_message(DATADB[user_uuid], new_point(num))
-        print(dtype)
         if not dtype:
-            DATADB[user_uuid]['history'].append(num)
+
+            DATADB[user_uuid]['history'][int(round(time.time() * 1000))] = [
+                num, detail]
             name = DATADB[user_uuid]['name']
-            message = set_msg(
-                f'{name}<br>投掷了<br><span class="point">{num}</span>')
+            message = other_point(name, num)
             for user in DATADB:
                 if user == user_uuid:
                     continue
