@@ -325,7 +325,7 @@
                             for (res_type in res[key][2][1]) {
                                 res_history += '<tr><td>' + res_type + '</td><td>' + res[key][2][1][res_type] + '</td></tr>';
                             }
-                            res_html += '<li class="layui-timeline-item"><i class="layui-icon layui-timeline-axis">&#xe63f;</i><div class="layui-timeline-content layui-text"><h3 class="layui-timeline-title">' + name + '</h3><p>' + res_time + '</p><table class="layui-table" lay-size="sm"><thead><tr><th>骰子</th><th>结果</th></tr></thead><tbody><tr><td>合计</td><td>' + res_sum + '</td></tr>' + res_history + '</tbody></table></div></li>';
+                            res_html += '<li class="layui-timeline-item"><i class="layui-icon layui-timeline-axis">&#xe63f;</i><div class="layui-timeline-content layui-text"><h3 class="layui-timeline-title">' + res_name + '</h3><p>' + res_time + '</p><table class="layui-table" lay-size="sm"><thead><tr><th>骰子</th><th>结果</th></tr></thead><tbody><tr><td>合计</td><td>' + res_sum + '</td></tr>' + res_history + '</tbody></table></div></li>';
 
                         }
                         $('#res_history').html(res_html);
