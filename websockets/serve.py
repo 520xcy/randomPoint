@@ -85,8 +85,7 @@ def send_message(user, message):
 
 
 def reset_all():
-    for user in DATADB:
-        DATADB[user]['history'] = {}
+    DATADB.clear()
 
 
 def set_heartuuid():
