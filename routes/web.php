@@ -11,16 +11,14 @@
 |
 */
 
-Route::get('/', function () {
-    if(Auth::guard('random')->guest()){
-        $sessionid = Session::getId();
-        $user = \App\Models\User::firstOrCreate(['sessionid' => $sessionid]);
-        $user_id = $user->uuid;
-        Auth::guard('random')->login($user, true);
-    }
-    $user_id = Auth::guard('random')->id();
-
-    
-
-    return view('index', ['user_id' => $user_id]);
+Route::get('pcloginqr', 'LoginController@pcLoginQR')->name('pcloginqr');
+Route::put('pcloginCheck','LoginController@pcloginCheck')->name('pclogincheck');
+Route::get('logout', 'LoginController@logout')->name('logout');
+Route::group(['middleware' => ['wechat.oauth']], function () {
+    Route::get('login', 'LoginController@login')->name('login');
+    Route::get('pclogin', 'LoginController@pcLogin')->name('pclogin');
+});
+Route::group(['middleware' => ['logincheck:random']], function () {
+    Route::get('/', 'CommonController@point')->name('index');
+    Route::post('update', 'LoginController@update')->name('api/update');
 });

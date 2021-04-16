@@ -12,7 +12,7 @@ class User extends Authenticatable
 
     public $incrementing  = false;
     protected $table      = 'users';
-    protected $primaryKey = 'uuid';
+    protected $primaryKey = 'openid';
     protected $keyType = 'string'; //uuid做用户表id的坑
     protected $dates      = [
         'created_at',
@@ -25,7 +25,7 @@ class User extends Authenticatable
      * @var array
      */
     protected $fillable = [
-        'name', 'sessionid',
+        'name', 'openid', 'last_session'
     ];
 
     /**
@@ -34,27 +34,27 @@ class User extends Authenticatable
      * @var array
      */
     protected $hidden = [
-        // 'password', 'remember_token',
+        'password', 'remember_token',
     ];
 
     protected $appends = []; //返回数列中添加
 
-    protected static function boot()
-    {
-        parent::boot();
+    // protected static function boot()
+    // {
+    //     parent::boot();
 
-        /**
-         * Attach to the 'creating' Model Event to provide a UUID
-         * for the `id` field (provided by $model->getKeyName())
-         */
-        static::creating(function ($model) {
-            $model->{$model->getKeyName()} = (string)$model->generateNewId();
-            // $model->uuid = (string) $model->generateNewId();
-        });
-    }
+    //     /**
+    //      * Attach to the 'creating' Model Event to provide a UUID
+    //      * for the `id` field (provided by $model->getKeyName())
+    //      */
+    //     static::creating(function ($model) {
+    //         $model->{$model->getKeyName()} = (string)$model->generateNewId();
+    //         // $model->uuid = (string) $model->generateNewId();
+    //     });
+    // }
 
-    protected function generateNewId()
-    {
-        return (string) Str::orderedUuid();;
-    }
+    // protected function generateNewId()
+    // {
+    //     return (string) Str::orderedUuid();;
+    // }
 }

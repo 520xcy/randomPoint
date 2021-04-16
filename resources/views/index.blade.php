@@ -3,8 +3,17 @@
 
 <head>
     <title>司令的骰子</title>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta charset="UTF-8">
+    <!--==============手机端适应============-->
+    <meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+    <!--===================================-->
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <!--==============强制双核浏览器使用谷歌内核============-->
+    <meta name="renderer" content="webkit">
+    <meta name="force-rendering" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <link rel="stylesheet" href="{{ asset('layui/css/layui.css')}}">
     <style>
         .point {
@@ -78,7 +87,7 @@
                 <div class="layui-colla-content layui-show">
                     <form class="layui-form layui-row setting" lay-filter="setting">
                         <div class="layui-col-md4" style="padding:2px">
-                            <input type="text" id="name" name="name" required lay-verify="required" placeholder="请输入昵称" autocomplete="off" class="layui-input" lay-verType="tips" lay-reqText="你想让大家称呼阿猫阿狗？">
+                            <input type="text" id="name" name="name" required lay-verify="required" placeholder="请输入昵称" value="{{ $user->name ?? ''}}" autocomplete="off" class="layui-input" lay-verType="tips" lay-reqText="你想让大家称呼阿猫阿狗？">
                         </div>
 
                         <div class="layui-col-md4" style="padding:2px">
@@ -181,6 +190,8 @@
         </div>
     </div>
     <script src="{{ asset('layui/layui.js') }}"></script>
+    <script src="{{ asset('js/jquery-2.1.1.min.js')}}"></script>
+    <script src="{{ asset('js/DDRequest.js')}}"></script>
     <script>
         layui.use(function() {
             var $ = layui.$,
@@ -191,8 +202,8 @@
                 laydate = layui.laydate,
                 util = layui.util;
 
-            var user_count, user_name = '',
-                user_uuid = "{{ $user_id ?? '' }}";
+            var user_count, user_name = "{{ $user->name ?? ''}}",
+                user_uuid = "{{ $user->openid ?? '' }}";
             var d_color = ['black', 'blue', 'cyan', 'green', 'orange', 'pink', 'purple', 'red', 'white', 'yellow'];
             var d_random = {};
             var d_type = false;
@@ -254,7 +265,14 @@
             websocket = new WebSocket("ws://" + location.hostname + ":6789/");
 
             form.on('submit(setname)', function(data) {
-                websocket.send(JSON.stringify({ action: 'setname', user_uuid: user_uuid, value: data.field.name.toString() }));
+                let name = data.field.name.toString();
+                console.log(name);
+                AjaxSubmit("{{ route('api/update') }}", { "name": name }, function(res) {
+                    websocket.send(JSON.stringify({ action: 'setname', user_uuid: user_uuid, value: name }));
+                }, function(error) {
+                    layui.msg(error);
+                }, "post");
+
             });
             form.on('checkbox(dark)', function(data) {
                 d_type = data.elem.checked;
@@ -263,7 +281,7 @@
                 if (!$.isEmptyObject(d_random)) {
                     websocket.send(JSON.stringify({ action: 'random', user_uuid: user_uuid, data: d_random, dark: d_type }));
                     $("#clear").trigger("click");
-                }else{
+                } else {
                     layer.msg('您还没选骰子');
                 }
 
@@ -309,10 +327,14 @@
                 //当客户端收到服务端发送的关闭连接请求时，触发onclose事件
                 // layer.msg('与大家庭链接断开了，要不刷新下页面试试？');
                 layer.open({
-                    title: false
-                    ,content: '与大家庭链接断开了，要不刷新下页面试试？'
-                    ,btn:[]
-                });   
+                    title: false,
+                    content: '与大家庭链接断开了，要不刷新下页面试试？',
+                    btn: [],
+                    time:5000,
+                    end:function(){
+                        location.reload();
+                    }
+                });
             }
 
 
