@@ -270,7 +270,11 @@
                 AjaxSubmit("{{ route('api/update') }}", { "name": name }, function(res) {
                     websocket.send(JSON.stringify({ action: 'setname', user_uuid: user_uuid, value: name }));
                 }, function(error) {
-                    layer.msg(error);
+                    layer.msg(error[1], {
+                            icon: 5,
+                            title: error[0],
+                            skin: 'layer-ext-moon'
+                        });
                 }, "post");
 
             });

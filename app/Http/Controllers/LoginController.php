@@ -5,13 +5,9 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use App\Models\PcLogin;
 use Illuminate\Http\Request;
-use Illuminate\Support\Str;
-use Illuminate\Support\Facades\Session;
-use Illuminate\Support\Facades\Cookie;
 use Illuminate\Support\Facades\Hash;
-use App\Rules\TelphoneRule;
 use DB;
-use SimpleSoftwareIO\QrCode\Facades\QrCode;
+use Illuminate\Validation\Rule;
 use Overtrue\Socialite\User as SocialiteUser;
 use Faker\Generator as Faker;
 
@@ -55,8 +51,6 @@ class LoginController extends CommonController
 
                 session([$sessionKey => $wechatuser]);
 
-                $this->loginId($user);
-
                 return response()->json(['state' => 200, 'message' => '登录成功']);
             }
         }
@@ -80,8 +74,10 @@ class LoginController extends CommonController
     {
         $wechatuser = $this->WeChatUser($request);
 
+        $wechatuser = User::find($wechatuser['id']);
+
         $rule = [
-            'name' => 'required|string|unique:users',
+            'name' => ['required', 'string', Rule::unique('users')->ignore($wechatuser)],
         ];
 
         $data = $request->except('_token');
@@ -92,7 +88,6 @@ class LoginController extends CommonController
         DB::beginTransaction();
         try {
 
-            $wechatuser = User::find($wechatuser['id']);
 
             $wechatuser->name = $data['name'];
 

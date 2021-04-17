@@ -15,14 +15,15 @@ class WeChatController extends CommonController
 
     public function serve(Request $request)
     {
+        
+        if($request->filled('echostr')){
+            return $request->input('echostr');
+        }
 
         $app = $this->WeChat();
-        // $app->server->push(function($message){
-        //     return "欢迎关注 overtrue！";
-        // });
-        $app->server->push(function ($message) {
 
-            return $message['MsgType'];
+        $app->server->push(function ($message) {
+            return config('app.url');
         });
 
         return $app->server->serve();
@@ -76,5 +77,4 @@ class WeChatController extends CommonController
 
         dump($url = $app->qrcode->url($result['ticket']));
     }
-
 }

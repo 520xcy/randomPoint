@@ -18,16 +18,19 @@ class LoginCheck
      */
     public function handle($request, Closure $next, $guard = null)
     {
+        $wechat = $this->WeChatUser($request);
+
+        if(!$wechat && Browser::isDesktop()){
+            return redirect()->route('pcloginqr',['target_url' => urlencode($request->fullUrl())]);
+        }
+
         if (Auth::guard($guard)->guest()) {
 
             if ($request->wantsJson()) {
                 return response()->json(['message' => '抱歉出错啦！', 'errors' => ['错误代码' => '无权访问']], 403);
             }
-            if(Browser::isDesktop()){
-                return redirect()->route('pcloginqr',['target_url' => urlencode($request->fullUrl())]);
-            }else{
-                return redirect()->route('login',['target_url' => urlencode($request->fullUrl())]);
-            }
+            
+            return redirect()->route('login',['target_url' => urlencode($request->fullUrl())]);
         }
         // 多点登录
         $user = Auth::guard($guard)->user();
@@ -39,7 +42,6 @@ class LoginCheck
             return redirect()->route('logout', ['target_url' => urlencode($request->fullUrl())]);
         }
         // 微信授权用户与当前登录用户不匹配
-        $wechat = $this->WeChatUser($request);
         if ($wechat['id'] != $user->openid) {
             if ($request->wantsJson()) {
                 return response()->json(['message' => '抱歉出错啦！', 'errors' => ['错误代码' => '微信授权用户与当前登录用户不匹配']], 403);
@@ -57,8 +59,7 @@ class LoginCheck
         $class = ('work' !== $type) ? 'wechat' : 'work';
         $sessionKey = \sprintf('%s.oauth_user.%s', $class, $account);
 
-        abort_unless(Session::has($sessionKey), 403, '微信授权出错');
-
+        // abort_unless(Session::has($sessionKey), 403, '微信授权出错');
         return session($sessionKey);
     }
 

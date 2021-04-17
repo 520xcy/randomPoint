@@ -21,15 +21,6 @@ class CommonController extends Controller
     {
     }
 
-    public function index()
-    {
-        if(Browser::isDesktop()){
-            return redirect()->route('pcloginqr');
-        }else{
-            return redirect()->route('login');
-        }
-    }
-
     public function point(Request $request)
     {
         $user = $this->auth_user()->user();
