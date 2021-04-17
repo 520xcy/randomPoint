@@ -11,6 +11,8 @@
 |
 */
 
+Route::any('/wechat', 'WeChatController@serve');
+
 Route::get('pcloginqr', 'LoginController@pcLoginQR')->name('pcloginqr');
 Route::put('pcloginCheck','LoginController@pcloginCheck')->name('pclogincheck');
 Route::get('logout', 'LoginController@logout')->name('logout');
