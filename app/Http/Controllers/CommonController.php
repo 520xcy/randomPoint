@@ -86,8 +86,9 @@ class CommonController extends Controller
 
     protected function error(String $msg, Object $e, String $router)
     {
-        $errorid = Str::uuid();
+        $errorid = (string)Str::uuid();
         \Log::channel('error')->error(sprintf('[%s]%s Message:%s; File:%s:%s; Router:%s', $errorid, $msg, $e->getMessage(), $e->getFile(), $e->getLine(), $router));
+
         if (config('app.debug')) {
             throw $e;
             // $error = [

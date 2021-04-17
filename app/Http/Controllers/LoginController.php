@@ -151,6 +151,7 @@ class LoginController extends CommonController
 
         DB::beginTransaction();
         try {
+            throw new \Exception('二维码已过期');
 
             if (!Hash::check($date, $random_key)) {
                 throw new \Exception('二维码已过期');
