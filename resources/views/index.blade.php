@@ -397,8 +397,10 @@
                         break;
                     case 'reg':
                         user_name = data.name;
-                        $('#name').val(user_name);
-                        layer.msg('昵称设置成功');
+                        if(user_name){
+                            $('#name').val(user_name);
+                            layer.msg('昵称设置成功');
+                        }
                         break;
                     case 'msg':
                         layer.msg(data.message);
