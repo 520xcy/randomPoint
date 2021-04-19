@@ -106,7 +106,7 @@ class LoginController extends CommonController
     {
         $this->auth_user()->logout();
 
-        session()->regenerate();
+        session()->flush();
 
         $targetUrl = $request->input('target_url', route('index'));
 
