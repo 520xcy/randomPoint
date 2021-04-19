@@ -37,8 +37,8 @@
                 laypage = layui.laypage,
                 element = layui.element,
                 laydate = layui.laydate,
-                util = layui.util;
-            hash = "{{ $hash }}"
+                util = layui.util,
+                hash = "{{ $hash }}";
             var intervalId = window.setInterval(function(){
                 AjaxSubmit("{{route('pclogincheck')}}", { "random_key": hash }, function(res) {
                     clearInterval(intervalId);
