@@ -27,7 +27,7 @@
         </div>
     </div>
     <script src="{{ asset('layui/layui.js') }}"></script>
-    <script src="{{ asset('js/jquery-2.1.1.min.js')}}"></script>
+    <script src="{{ asset('js/jquery.min.js')}}"></script>
     <script src="{{ asset('js/DDRequest.js')}}"></script>
     <script>
         layui.use(function() {
