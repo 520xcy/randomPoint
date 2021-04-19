@@ -30,27 +30,21 @@
     <script src="{{ asset('js/jquery.min.js')}}"></script>
     <script src="{{ asset('js/DDRequest.js')}}"></script>
     <script>
-        layui.use(function() {
-            var $ = layui.$,
-                layer = layui.layer,
-                form = layui.form,
-                laypage = layui.laypage,
-                element = layui.element,
-                laydate = layui.laydate,
-                util = layui.util,
+        layui.use(['layer'], function() {
+            var layer = layui.layer,
                 hash = "{{ $hash }}";
-            var intervalId = window.setInterval(function(){
+            var intervalId = window.setInterval(function() {
                 AjaxSubmit("{{route('pclogincheck')}}", { "random_key": hash }, function(res) {
                     clearInterval(intervalId);
                     layer.msg(res.message, function() {
                         location.href = "{{$target_url}}";
                     });
-                    
+
                 }, function(err) {
 
                 }, 'PUT');
             }, 2000);
-            
+
             /*
              ** 时间戳转换成指定格式日期
              ** eg. 
