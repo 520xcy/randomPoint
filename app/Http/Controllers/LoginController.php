@@ -125,7 +125,7 @@ class LoginController extends CommonController
         $once_login = bcrypt('xiang');
 
         session()->regenerate();
-
+        
         session(['once_login' => $once_login]);
 
         $this->auth_user()->loginUsingId($user->openid, true);
@@ -153,13 +153,7 @@ class LoginController extends CommonController
 
         DB::beginTransaction();
         try {
-
-            if (!Hash::check($date, $random_key)) {
-                $error = [
-                    '出错啦' => '二维码已过期'
-                ];
-                return $this->response_error($error);
-            }
+            throw_unless(Hash::check($date, $random_key),new \Exception('二维码已过期'));
             // Cookie::make('once_login', $once_login, 24 * 60 * 365);
             $this->updateWeChatUser($wechatuser);
 
