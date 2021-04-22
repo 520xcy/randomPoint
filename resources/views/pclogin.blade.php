@@ -36,9 +36,16 @@
             var intervalId = window.setInterval(function() {
                 AjaxSubmit("{{route('pclogincheck')}}", { "random_key": hash }, function(res) {
                     clearInterval(intervalId);
-                    layer.msg(res.message, function() {
-                        location.href = "{{$target_url}}";
-                    });
+                    if(res.state == 200){
+                        layer.msg(res.message, function() {
+                            location.href = "{{$target_url}}";
+                        });
+                    }else if(res.state == 312){
+                        layer.msg(res.message)
+                    }else if(res.state == 310){
+                        location.reload();
+                    }
+                    
 
                 }, function(err) {
 

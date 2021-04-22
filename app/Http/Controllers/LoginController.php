@@ -20,7 +20,9 @@ class LoginController extends CommonController
 
     public function pcloginCheck(Request $request, Faker $faker)
     {
-        $checked = PcLogin::find($request->input('random_key'));
+        $random_key =  $request->input('random_key');
+
+        $checked = PcLogin::find($random_key);
         if ($checked) {
             $user = User::find($checked->openid);
             if ($user) {
@@ -53,6 +55,8 @@ class LoginController extends CommonController
 
                 return response()->json(['state' => 200, 'message' => '登录成功']);
             }
+        }elseif(!Hash::check(date('Y|m|d|H|i'), $random_key)){
+            return response()->json(['state' => 310, 'message' => '二维码过期']);
         }
         return response()->json(['message' => '未登录'], 422);
     }
